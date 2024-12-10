@@ -1,0 +1,113 @@
+.tree-layout {
+  font-family: "Roboto", Arial, sans-serif;
+  padding: 20px;
+  background-color: var(--white);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+  transition: all 0.3s ease;
+}
+
+.tree-layout:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.tree {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.tree-item {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 15px;
+}
+
+.tree-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10px;
+  border-left: 2px solid var(--light-blue);
+  height: 100%;
+}
+
+.tree-item:last-child::before {
+  height: 15px;
+}
+
+.tree-item::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  width: 20px;
+  border-top: 2px solid var(--light-blue);
+}
+
+.tree-label {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: var(--light-blue);
+  color: var(--white);
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.tree-label:hover {
+  background-color: var(--dark-blue);
+  transform: translateX(5px);
+}
+
+.tree-submenu {
+  margin-top: 10px;
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.tree-submenu-item {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.tree-submenu-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-left: 2px solid var(--accent);
+  height: 100%;
+}
+
+.tree-submenu-item:last-child::before {
+  height: 15px;
+}
+
+.tree-submenu-item::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 20px;
+  border-top: 2px solid var(--accent);
+}
+
+.tree-submenu-label {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background-color: var(--accent);
+  color: var(--dark-blue);
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.tree-submenu-label:hover {
+  background-color: var(--dark-blue);
+  color: var(--white);
+  transform: translateX(5px);
+}

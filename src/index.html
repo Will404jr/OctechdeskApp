@@ -1,13 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Form</title>
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
-    <a href="./pages/menu.html">Menu</a>
+    <div class="container">
+      <form class="login-form" action="./pages/menu.html">
+        <div class="logo">
+          <img src="../public/octech.jpg" alt="Company Logo" height="20px" />
+        </div>
+        <h2>Welcome Back</h2>
+        <div class="input-group">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <button type="submit">Log In</button>
+        <!-- <div class="links">
+          <a href="#">Forgot password?</a>
+          <a href="#">Sign up</a>
+        </div> -->
+      </form>
+    </div>
   </body>
 </html>

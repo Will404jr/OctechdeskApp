@@ -20,7 +20,6 @@ async function createTicket(queueId, subItemId, issueDescription) {
 
     const result = await response.json();
 
-    // Display the ticketNo and issueDescription in an alert
     alert(
       `Ticket Created Successfully!\nTicket Number: ${result.data.ticketNo}\nIssue: ${result.data.issueDescription}`
     );
@@ -57,27 +56,32 @@ function renderMenu(menuData) {
     menuButton.textContent = item.menuItem.name;
     menuButton.setAttribute("data-menu", item.menuItem._id);
 
-    const submenu = document.createElement("div");
-    submenu.className = "submenu";
-    submenu.id = `submenu-${item.menuItem._id}`;
+    const treeSubmenu = document.createElement("ul");
+    treeSubmenu.className = "tree-submenu";
+    treeSubmenu.id = `submenu-${item.menuItem._id}`;
 
     item.menuItem.subMenuItems.forEach((subItem) => {
-      const subMenuButton = document.createElement("button");
-      subMenuButton.className = "submenu-button";
-      subMenuButton.textContent = subItem.name;
-      subMenuButton.setAttribute("data-id", subItem._id);
-      subMenuButton.addEventListener("click", () => {
+      const treeSubmenuItem = document.createElement("li");
+      treeSubmenuItem.className = "tree-submenu-item";
+
+      const treeSubmenuButton = document.createElement("button");
+      treeSubmenuButton.className = "tree-submenu-button";
+      treeSubmenuButton.textContent = subItem.name;
+      treeSubmenuButton.setAttribute("data-id", subItem._id);
+      treeSubmenuButton.addEventListener("click", () => {
         createTicket(
           item._id,
           subItem._id,
           `${item.menuItem.name} - ${subItem.name}`
         );
       });
-      submenu.appendChild(subMenuButton);
+
+      treeSubmenuItem.appendChild(treeSubmenuButton);
+      treeSubmenu.appendChild(treeSubmenuItem);
     });
 
     menuItem.appendChild(menuButton);
-    menuItem.appendChild(submenu);
+    menuItem.appendChild(treeSubmenu);
     menuContainer.appendChild(menuItem);
   });
 
@@ -92,7 +96,7 @@ function addMenuListeners() {
       const menuId = button.getAttribute("data-menu");
       const submenu = document.getElementById(`submenu-${menuId}`);
 
-      document.querySelectorAll(".submenu").forEach((sub) => {
+      document.querySelectorAll(".tree-submenu").forEach((sub) => {
         if (sub !== submenu) {
           sub.classList.remove("active");
         }
