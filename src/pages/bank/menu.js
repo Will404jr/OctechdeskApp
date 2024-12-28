@@ -1,12 +1,21 @@
 async function createTicket(queueId, subItemId, issueDescription) {
+  const branchId = sessionStorage.getItem("branchId");
+
+  if (!branchId) {
+    console.error("Branch ID not found in session storage");
+    alert("Error: Branch ID not found. Please log in again.");
+    return;
+  }
+
   const ticketData = {
     queueId,
     subItemId,
     issueDescription,
+    branchId,
   };
 
   try {
-    const response = await fetch("http://localhost:3000/api/ticket", {
+    const response = await fetch("http://localhost:3000/api/bank/ticket", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

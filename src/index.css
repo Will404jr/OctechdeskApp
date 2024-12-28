@@ -111,3 +111,9 @@ button:hover {
     padding: 1.5rem;
   }
 }
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}

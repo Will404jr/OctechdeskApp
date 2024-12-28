@@ -8,17 +8,17 @@
   </head>
   <body>
     <div class="container">
-      <form class="login-form" action="./pages/hospital.html">
+      <form id="loginForm" class="login-form">
         <div class="logo">
           <img src="../public/octech.jpg" alt="Company Logo" height="20px" />
         </div>
         <h2>Welcome Back</h2>
         <div class="input-group">
           <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Email"
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Username"
             required
           />
         </div>
@@ -32,11 +32,13 @@
           />
         </div>
         <button type="submit">Log In</button>
+        <div id="errorMessage" class="error-message"></div>
         <!-- <div class="links">
           <a href="#">Forgot password?</a>
           <a href="#">Sign up</a>
         </div> -->
       </form>
     </div>
+    <script src="login.js"></script>
   </body>
 </html>
