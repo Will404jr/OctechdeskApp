@@ -16,6 +16,8 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
       devTools: false,
     },
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, "assets", "queue.ico"),
   });
 
   // and load the index.html of the app.
