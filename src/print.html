@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print Ticket</title>
+  </head>
+  <body>
+    <div id="ticket-content"></div>
+  </body>
+  <script>
+    const { ipcRenderer } = require("electron");
+
+    ipcRenderer.on("on-print", (event, data) => {
+      console.log("Received data to print:", data); // Debugging received data
+
+      // Insert the HTML content into the DOM
+      document.getElementById("ticket-content").innerHTML = data;
+
+      // Debugging to ensure content is in the DOM
+      console.log("Ticket content inserted into the DOM.");
+
+      // Trigger the print after the content is set
+      window.print();
+    });
+  </script>
+</html>

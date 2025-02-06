@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function createTicket() {
   try {
-    const response = await fetch("http://localhost:3000/api/hospital/ticket", {
+    const apiUrl = window.env.API_URL;
+    const response = await fetch(`${apiUrl}/api/hospital/ticket`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

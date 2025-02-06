@@ -1,50 +1,12 @@
-async function createTicket(queueId, subItemId, issueDescription) {
-  const branchId = sessionStorage.getItem("branchId");
-
-  if (!branchId) {
-    console.error("Branch ID not found in session storage");
-    alert("Error: Branch ID not found. Please log in again.");
-    return;
-  }
-
-  const ticketData = {
-    queueId,
-    subItemId,
-    issueDescription,
-    branchId,
-  };
-
-  try {
-    const response = await fetch("http://localhost:3000/api/bank/ticket", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(ticketData),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to create ticket");
-    }
-
-    const result = await response.json();
-
-    alert(
-      `Ticket Created Successfully!\nTicket Number: ${result.data.ticketNo}\nIssue: ${result.data.issueDescription}`
-    );
-  } catch (error) {
-    console.error("Error creating ticket:", error);
-    alert("Failed to create ticket. Please try again.");
-  }
-}
-
+// menu.js
 document.addEventListener("DOMContentLoaded", () => {
   fetchMenuData();
 });
 
 async function fetchMenuData() {
   try {
-    const response = await fetch("http://localhost:3000/api/bank/queues");
+    const apiUrl = window.env.API_URL;
+    const response = await fetch(`${apiUrl}/api/bank/queues`);
     const data = await response.json();
     renderMenu(data);
   } catch (error) {
@@ -117,4 +79,48 @@ function addMenuListeners() {
       button.classList.toggle("active");
     });
   });
+}
+
+async function createTicket(queueId, subItemId, issueDescription) {
+  const branchId = sessionStorage.getItem("branchId");
+
+  if (!branchId) {
+    console.error("Branch ID not found in session storage");
+    alert("Error: Branch ID not found. Please log in again.");
+    return;
+  }
+
+  const ticketData = {
+    queueId,
+    subItemId,
+    issueDescription,
+    branchId,
+  };
+
+  try {
+    const apiUrl = window.env.API_URL;
+    const response = await fetch(`${apiUrl}/api/bank/ticket`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(ticketData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create ticket");
+    }
+
+    const result = await response.json();
+
+    alert(
+      `Ticket Created Successfully!\nTicket Number: ${result.data.ticketNo}\nIssue: ${result.data.issueDescription}`
+    );
+
+    // After creating ticket, trigger print request
+    window.electron.sendToMain("request-print", result.data);
+  } catch (error) {
+    console.error("Error creating ticket:", error);
+    alert("Failed to create ticket. Please try again.");
+  }
 }

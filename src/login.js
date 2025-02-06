@@ -10,9 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // First, check the company type
-      const settingsResponse = await fetch(
-        "http://localhost:3000/api/settings"
-      );
+      const apiUrl = window.env.API_URL;
+      const settingsResponse = await fetch(`${apiUrl}/api/settings`);
       if (!settingsResponse.ok) {
         throw new Error("Failed to fetch company settings");
       }
@@ -21,9 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let loginUrl;
       if (companyType === "Hospital") {
-        loginUrl = "http://localhost:3000/api/hospital/kiosk-login";
+        loginUrl = `${apiUrl}/api/hospital/kiosk-login`;
       } else if (companyType === "Bank") {
-        loginUrl = "http://localhost:3000/api/bank/kiosk-login";
+        loginUrl = `${apiUrl}/api/bank/kiosk-login`;
       } else {
         throw new Error("Invalid company type");
       }

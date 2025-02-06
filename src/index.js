@@ -1,40 +1,88 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("node:path");
-const started = require("electron-squirrel-startup");
+require("dotenv").config();
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (started) {
-  app.quit();
-}
+let printWindow;
 
 const createWindow = () => {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      devTools: false,
+      nodeIntegration: true,
     },
     autoHideMenuBar: true,
     icon: path.join(__dirname, "assets", "queue.ico"),
   });
 
-  // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // Print window
+  printWindow = new BrowserWindow({
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  });
+  printWindow.loadFile(path.join(__dirname, "print.html"));
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+// Listen for print requests from the renderer process
+ipcMain.on("request-print", (event, ticketData) => {
+  console.log("Printing ticket:", ticketData); // Debug log
+
+  // Prepare the ticket content as an HTML string
+  const ticketContent = `
+    <h1>Ticket Number: ${ticketData.ticketNo}</h1>
+    <p><strong>Issue:</strong> ${ticketData.issueDescription}</p>
+    <p><strong>Branch:</strong> ${ticketData.branchId}</p>
+    <footer><small>Generated on ${new Date(
+      ticketData.createdAt
+    ).toLocaleString()}</small></footer>
+  `;
+
+  console.log("Ticket content to print:", ticketContent); // Debugging HTML content
+
+  // Send the HTML content to the print window
+  printTicket(ticketContent);
+});
+
+// Function to send ticket content to print window
+function printTicket(ticketContent) {
+  if (!printWindow) {
+    console.error("Print window is not available!");
+    return;
+  }
+
+  // Send the HTML content to the print window
+  printWindow.webContents.send("on-print", ticketContent);
+
+  // Trigger the print on the window
+  printWindow.webContents.print(
+    {
+      silent: true,
+      show: true,
+      printBackground: true,
+      margin: { marginType: "printableArea" },
+      landscape: false,
+      pagesPerSheet: 1,
+      collate: false,
+      copies: 1,
+    },
+    (success, failureReason) => {
+      if (!success) {
+        console.log("Failed to print:", failureReason);
+      } else {
+        console.log("Printing successful");
+      }
+    }
+  );
+}
+
 app.whenReady().then(() => {
   createWindow();
 
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -42,14 +90,8 @@ app.whenReady().then(() => {
   });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
