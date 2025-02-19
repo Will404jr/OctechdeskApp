@@ -1,16 +1,17 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
-const path = require("node:path");
-require("dotenv").config();
+const path = require("path");
+const printService = require("./print");
 
-let printWindow;
+let mainWindow;
 
 const createWindow = () => {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: true,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
     autoHideMenuBar: true,
     icon: path.join(__dirname, "assets", "queue.ico"),
@@ -18,67 +19,21 @@ const createWindow = () => {
 
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
-  // Print window
-  printWindow = new BrowserWindow({
-    show: false,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-  });
-  printWindow.loadFile(path.join(__dirname, "print.html"));
+  // Optional: Open DevTools for debugging
+  mainWindow.webContents.openDevTools();
 };
 
-// Listen for print requests from the renderer process
-ipcMain.on("request-print", (event, ticketData) => {
-  console.log("Printing ticket:", ticketData); // Debug log
-
-  // Prepare the ticket content as an HTML string
-  const ticketContent = `
-    <h1>Ticket Number: ${ticketData.ticketNo}</h1>
-    <p><strong>Issue:</strong> ${ticketData.issueDescription}</p>
-    <p><strong>Branch:</strong> ${ticketData.branchId}</p>
-    <footer><small>Generated on ${new Date(
-      ticketData.createdAt
-    ).toLocaleString()}</small></footer>
-  `;
-
-  console.log("Ticket content to print:", ticketContent); // Debugging HTML content
-
-  // Send the HTML content to the print window
-  printTicket(ticketContent);
-});
-
-// Function to send ticket content to print window
-function printTicket(ticketContent) {
-  if (!printWindow) {
-    console.error("Print window is not available!");
-    return;
+// Handle print requests
+ipcMain.handle("print-ticket", async (_, ticketData) => {
+  console.log("Main process: Received print request", ticketData);
+  try {
+    const result = await printService.printTicket(ticketData);
+    return { success: true, ...result };
+  } catch (error) {
+    console.error("Error in print-ticket handler:", error);
+    return { success: false, error: error.message };
   }
-
-  // Send the HTML content to the print window
-  printWindow.webContents.send("on-print", ticketContent);
-
-  // Trigger the print on the window
-  printWindow.webContents.print(
-    {
-      silent: true,
-      show: true,
-      printBackground: true,
-      margin: { marginType: "printableArea" },
-      landscape: false,
-      pagesPerSheet: 1,
-      collate: false,
-      copies: 1,
-    },
-    (success, failureReason) => {
-      if (!success) {
-        console.log("Failed to print:", failureReason);
-      } else {
-        console.log("Printing successful");
-      }
-    }
-  );
-}
+});
 
 app.whenReady().then(() => {
   createWindow();

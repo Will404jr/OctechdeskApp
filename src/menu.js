@@ -1,12 +1,11 @@
-// menu.js
 document.addEventListener("DOMContentLoaded", () => {
   fetchMenuData();
 });
 
 async function fetchMenuData() {
   try {
-    const apiUrl = window.env.API_URL;
-    const response = await fetch(`${apiUrl}/api/bank/queues`);
+    // const apiUrl = window.env.API_URL;
+    const response = await fetch("http://localhost:3000/api/bank/queues");
     const data = await response.json();
     renderMenu(data);
   } catch (error) {
@@ -98,8 +97,7 @@ async function createTicket(queueId, subItemId, issueDescription) {
   };
 
   try {
-    const apiUrl = window.env.API_URL;
-    const response = await fetch(`${apiUrl}/api/bank/ticket`, {
+    const response = await fetch("http://localhost:3000/api/bank/ticket", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -108,17 +106,40 @@ async function createTicket(queueId, subItemId, issueDescription) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to create ticket");
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const result = await response.json();
+    console.log("Ticket created:", result.data);
 
-    alert(
-      `Ticket Created Successfully!\nTicket Number: ${result.data.ticketNo}\nIssue: ${result.data.issueDescription}`
-    );
+    // Add debug logging
+    console.log("Window API object:", window.api);
 
-    // After creating ticket, trigger print request
-    window.electron.sendToMain("request-print", result.data);
+    // Print the ticket
+    try {
+      if (!window.api || !window.api.print) {
+        throw new Error("Print API not properly initialized");
+      }
+
+      const printResult = await window.api.print(result.data);
+      console.log("Print result:", printResult);
+
+      if (printResult.success) {
+        console.log("Ticket printed successfully");
+        alert("Ticket created and printed successfully!");
+        // Add page refresh after successful ticket creation and printing
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500); // Refresh after 1.5 seconds to allow the alert to be seen
+      } else {
+        throw new Error(printResult.error || "Printing failed");
+      }
+    } catch (printError) {
+      console.error("Error printing ticket:", printError);
+      alert(
+        `Ticket was created but printing failed. Error: ${printError.message}`
+      );
+    }
   } catch (error) {
     console.error("Error creating ticket:", error);
     alert("Failed to create ticket. Please try again.");

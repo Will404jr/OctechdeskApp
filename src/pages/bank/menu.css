@@ -14,16 +14,21 @@ body {
   background-color: var(--gray);
   color: #333;
   min-height: 100vh;
+  display: flex; /* Added for vertical centering */
+  justify-content: center; /* Added for vertical centering */
+  align-items: center; /* Added for vertical centering */
 }
 
 .container {
   max-width: 800px;
-  margin: 20px auto;
+  margin: 0 auto; /* Changed from 20px auto */
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  width: 100%; /* Added to ensure full width */
+  box-sizing: border-box; /* Added to include padding in width calculation */
 }
 
 .header-wrapper,
@@ -36,8 +41,10 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
   transition: all 0.3s ease;
+  box-sizing: border-box; /* Added to include padding in width calculation */
 }
 
+/* Rest of your existing CSS remains exactly the same */
 .header-wrapper:hover,
 .menu-container:hover {
   transform: translateY(-5px);
@@ -236,6 +243,7 @@ h1 {
 @media (max-width: 768px) {
   .container {
     padding: 10px;
+    margin: 10px; /* Added to give some space on mobile */
   }
 
   .header-wrapper,
