@@ -14,18 +14,12 @@
     <div class="container">
       <div class="header-wrapper">
         <header class="header">
-          <img
-            src="../../../public/1732666481406-logo.png"
-            alt="DFCU Bank Logo"
-            class="logo"
-          />
-
+          <img id="bank-logo" alt="Bank Logo" class="logo" />
           <img
             src="../../../public/octech.jpg"
             alt="OcTech Logo"
             class="logo"
           />
-
           <div class="header-text">
             <h1>WELCOME</h1>
             <div class="service-text">Please Select your Preferred Service</div>
@@ -38,6 +32,48 @@
       </main>
     </div>
 
+    <script>
+      // Fetch bank settings when the page loads
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:3000/api/bank/settings"
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch bank settings");
+          }
+
+          const settings = await response.json();
+
+          // Set the logo if available
+          if (settings && settings.logoImage) {
+            const bankLogo = document.getElementById("bank-logo");
+            // Add base URL to the relative path
+            if (settings.logoImage.startsWith("/")) {
+              // This is a relative path, add the base URL
+              bankLogo.src = `http://localhost:3000${settings.logoImage}`;
+            } else {
+              // This is already a full URL
+              bankLogo.src = settings.logoImage;
+            }
+
+            // Set alt text to company name if available
+            if (settings.companyName) {
+              bankLogo.alt = `${settings.companyName} Logo`;
+            }
+          } else {
+            // If no logo found, use a fallback
+            document.getElementById("bank-logo").src =
+              "../../../public/1732666481406-logo.png";
+          }
+        } catch (error) {
+          console.error("Error fetching bank settings:", error);
+          // Use fallback logo on error
+          document.getElementById("bank-logo").src =
+            "../../../public/1732666481406-logo.png";
+        }
+      });
+    </script>
     <script src="../../menu.js"></script>
   </body>
 </html>

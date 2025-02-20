@@ -9,39 +9,40 @@
 
 body {
   font-family: "Roboto", Arial, sans-serif;
+  font-size: 18px; /* Base font size increase */
   margin: 0;
   padding: 0;
   background-color: var(--gray);
   color: #333;
   min-height: 100vh;
-  display: flex; /* Added for vertical centering */
-  justify-content: center; /* Added for vertical centering */
-  align-items: center; /* Added for vertical centering */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto; /* Changed from 20px auto */
+  max-width: 1200px; /* Increased from 800px */
+  margin: 0 auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  width: 100%; /* Added to ensure full width */
-  box-sizing: border-box; /* Added to include padding in width calculation */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-wrapper,
 .menu-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px; /* Increased from 800px */
   background-color: var(--white);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
   transition: all 0.3s ease;
-  box-sizing: border-box; /* Added to include padding in width calculation */
+  box-sizing: border-box;
 }
 
 /* Rest of your existing CSS remains exactly the same */
@@ -78,7 +79,7 @@ body {
 
 h1 {
   color: var(--dark-blue);
-  font-size: 36px;
+  font-size: 44px; /* Increased from 36px */
   margin: 0;
   margin-bottom: 15px;
   text-transform: uppercase;
@@ -90,7 +91,7 @@ h1 {
   color: var(--white);
   padding: 12px 25px;
   border-radius: 25px;
-  font-size: 18px;
+  font-size: 22px; /* Increased from 18px */
   font-weight: bold;
   box-shadow: 0 4px 10px rgba(0, 80, 158, 0.3);
   transition: all 0.3s ease;
@@ -120,8 +121,8 @@ h1 {
   background-color: var(--white);
   color: var(--dark-blue);
   border: 2px solid var(--dark-blue);
-  padding: 20px 25px;
-  font-size: 20px;
+  padding: 22px 28px; /* Slightly increased padding */
+  font-size: 24px; /* Increased from 20px */
   cursor: pointer;
   text-align: left;
   border-radius: 15px;
@@ -157,128 +158,78 @@ h1 {
   box-shadow: 0 6px 15px rgba(0, 51, 102, 0.3);
 }
 
+/* Replace the current tree-submenu and related styles with these */
+/* Updated submenu styles for grid layout */
 .tree-submenu {
   display: none;
   margin-top: 15px;
-  padding-left: 20px;
-  list-style-type: none;
   width: 100%;
+  padding: 0;
+  list-style-type: none;
 }
 
 .tree-submenu.active {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
   animation: fadeIn 0.3s ease-in-out;
 }
 
 .tree-submenu-item {
   position: relative;
-  padding-left: 30px;
-  margin-bottom: 15px;
+  margin-bottom: 0;
+  width: calc(50% - 15px); /* Two items per row with gap */
+  padding: 0;
 }
 
-.tree-submenu-item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  border-left: 2px solid var(--tree-line);
-  height: 100%;
-}
-
-.tree-submenu-item:last-child::before {
-  height: 50%;
-}
-
+/* Remove the tree branch styling */
+.tree-submenu-item::before,
 .tree-submenu-item::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 20px;
-  border-top: 2px solid var(--tree-line);
+  display: none;
 }
 
 .tree-submenu-button {
   background-color: var(--light-blue);
   color: var(--white);
   border: none;
-  padding: 15px 20px;
-  font-size: 18px;
+  padding: 18px 22px; /* Increased padding */
+  font-size: 20px; /* Increased from 18px */
   cursor: pointer;
   text-align: left;
   transition: all 0.3s ease;
   border-radius: 8px;
-  width: calc(100% - 30px);
-  display: inline-block;
+  width: 100%;
+  display: block;
+  height: 100%; /* Make all buttons the same height */
 }
 
-.tree-submenu-button:hover {
-  background-color: var(--dark-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Media query for smaller screens - stack items in one column */
 @media (max-width: 768px) {
-  .container {
-    padding: 10px;
-    margin: 10px; /* Added to give some space on mobile */
-  }
-
-  .header-wrapper,
-  .menu-container {
+  .tree-submenu-item {
     width: 100%;
-    max-width: 100%;
-    border-radius: 10px;
-  }
-
-  .header {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-
-  .logo {
-    height: 50px;
   }
 
   h1 {
-    font-size: 28px;
+    font-size: 34px; /* Slightly smaller on mobile */
   }
 
   .service-text {
-    font-size: 16px;
-    padding: 10px 20px;
+    font-size: 20px;
   }
 
   .menu-button {
-    font-size: 18px;
-    padding: 15px 20px;
+    font-size: 22px;
+    padding: 18px 22px;
   }
 
   .tree-submenu-button {
-    font-size: 16px;
-    padding: 12px 15px;
+    font-size: 18px;
+  }
+}
+
+/* For extra large screens - 3 items per row */
+@media (min-width: 1200px) {
+  .tree-submenu-item {
+    width: calc(33.333% - 15px);
   }
 }
