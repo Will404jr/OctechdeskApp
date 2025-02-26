@@ -9,7 +9,7 @@
 
 body {
   font-family: "Roboto", Arial, sans-serif;
-  font-size: 18px; /* Base font size increase */
+  font-size: 18px;
   margin: 0;
   padding: 0;
   background-color: var(--gray);
@@ -21,7 +21,7 @@ body {
 }
 
 .container {
-  max-width: 1200px; /* Increased from 800px */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
@@ -35,7 +35,7 @@ body {
 .header-wrapper,
 .menu-container {
   width: 100%;
-  max-width: 1200px; /* Increased from 800px */
+  max-width: 1200px;
   background-color: var(--white);
   padding: 20px;
   border-radius: 15px;
@@ -45,7 +45,6 @@ body {
   box-sizing: border-box;
 }
 
-/* Rest of your existing CSS remains exactly the same */
 .header-wrapper:hover,
 .menu-container:hover {
   transform: translateY(-5px);
@@ -79,7 +78,7 @@ body {
 
 h1 {
   color: var(--dark-blue);
-  font-size: 44px; /* Increased from 36px */
+  font-size: 44px;
   margin: 0;
   margin-bottom: 15px;
   text-transform: uppercase;
@@ -91,7 +90,7 @@ h1 {
   color: var(--white);
   padding: 12px 25px;
   border-radius: 25px;
-  font-size: 22px; /* Increased from 18px */
+  font-size: 22px;
   font-weight: bold;
   box-shadow: 0 4px 10px rgba(0, 80, 158, 0.3);
   transition: all 0.3s ease;
@@ -121,8 +120,8 @@ h1 {
   background-color: var(--white);
   color: var(--dark-blue);
   border: 2px solid var(--dark-blue);
-  padding: 22px 28px; /* Slightly increased padding */
-  font-size: 24px; /* Increased from 20px */
+  padding: 22px 28px;
+  font-size: 24px;
   cursor: pointer;
   text-align: left;
   border-radius: 15px;
@@ -158,8 +157,6 @@ h1 {
   box-shadow: 0 6px 15px rgba(0, 51, 102, 0.3);
 }
 
-/* Replace the current tree-submenu and related styles with these */
-/* Updated submenu styles for grid layout */
 .tree-submenu {
   display: none;
   margin-top: 15px;
@@ -178,39 +175,32 @@ h1 {
 .tree-submenu-item {
   position: relative;
   margin-bottom: 0;
-  width: calc(50% - 15px); /* Two items per row with gap */
+  width: calc(50% - 15px);
   padding: 0;
-}
-
-/* Remove the tree branch styling */
-.tree-submenu-item::before,
-.tree-submenu-item::after {
-  display: none;
 }
 
 .tree-submenu-button {
   background-color: var(--light-blue);
   color: var(--white);
   border: none;
-  padding: 18px 22px; /* Increased padding */
-  font-size: 20px; /* Increased from 18px */
+  padding: 18px 22px;
+  font-size: 20px;
   cursor: pointer;
   text-align: left;
   transition: all 0.3s ease;
   border-radius: 8px;
   width: 100%;
   display: block;
-  height: 100%; /* Make all buttons the same height */
+  height: 100%;
 }
 
-/* Media query for smaller screens - stack items in one column */
 @media (max-width: 768px) {
   .tree-submenu-item {
     width: 100%;
   }
 
   h1 {
-    font-size: 34px; /* Slightly smaller on mobile */
+    font-size: 34px;
   }
 
   .service-text {
@@ -227,9 +217,94 @@ h1 {
   }
 }
 
-/* For extra large screens - 3 items per row */
 @media (min-width: 1200px) {
   .tree-submenu-item {
     width: calc(33.333% - 15px);
+  }
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: var(--white);
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 15px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+  color: var(--dark-blue);
+  margin-bottom: 20px;
+}
+
+.modal select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid var(--light-blue);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--dark-blue);
+  color: var(--white);
+}
+
+.btn-secondary {
+  background-color: var(--gray);
+  color: var(--dark-blue);
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

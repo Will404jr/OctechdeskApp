@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function fetchMenuData() {
   try {
-    // const apiUrl = window.env.API_URL;
     const response = await fetch("http://localhost:3000/api/bank/queues");
     const data = await response.json();
     renderMenu(data);
@@ -39,7 +38,7 @@ function renderMenu(menuData) {
       treeSubmenuButton.textContent = subItem.name;
       treeSubmenuButton.setAttribute("data-id", subItem._id);
       treeSubmenuButton.addEventListener("click", () => {
-        createTicket(
+        showLanguageDialog(
           item._id,
           subItem._id,
           `${item.menuItem.name} - ${subItem.name}`
@@ -80,12 +79,51 @@ function addMenuListeners() {
   });
 }
 
-async function createTicket(queueId, subItemId, issueDescription) {
+function showLanguageDialog(queueId, subItemId, issueDescription) {
+  const dialog = document.getElementById("languageDialog");
+  const confirmBtn = document.getElementById("languageConfirm");
+  const cancelBtn = document.getElementById("languageCancel");
+  const select = document.getElementById("languageSelect");
+
+  dialog.style.display = "block";
+
+  confirmBtn.onclick = () => {
+    const language = select.value;
+    if (language) {
+      dialog.style.display = "none";
+      createTicket(queueId, subItemId, issueDescription, language);
+    } else {
+      showAlert("Error", "Please select a language.");
+    }
+  };
+
+  cancelBtn.onclick = () => {
+    dialog.style.display = "none";
+  };
+}
+
+function showAlert(title, message, callback) {
+  const dialog = document.getElementById("alertDialog");
+  const titleElement = document.getElementById("alertTitle");
+  const messageElement = document.getElementById("alertMessage");
+  const confirmBtn = document.getElementById("alertConfirm");
+
+  titleElement.textContent = title;
+  messageElement.textContent = message;
+  dialog.style.display = "block";
+
+  confirmBtn.onclick = () => {
+    dialog.style.display = "none";
+    if (callback) callback();
+  };
+}
+
+async function createTicket(queueId, subItemId, issueDescription, language) {
   const branchId = sessionStorage.getItem("branchId");
 
   if (!branchId) {
     console.error("Branch ID not found in session storage");
-    alert("Error: Branch ID not found. Please log in again.");
+    showAlert("Error", "Branch ID not found. Please log in again.");
     return;
   }
 
@@ -94,6 +132,7 @@ async function createTicket(queueId, subItemId, issueDescription) {
     subItemId,
     issueDescription,
     branchId,
+    language,
   };
 
   try {
@@ -126,22 +165,25 @@ async function createTicket(queueId, subItemId, issueDescription) {
 
       if (printResult.success) {
         console.log("Ticket printed successfully");
-        alert("Ticket created and printed successfully!");
-        // Add page refresh after successful ticket creation and printing
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500); // Refresh after 1.5 seconds to allow the alert to be seen
+        showAlert(
+          "Success",
+          "Please receive your ticket and wait in the queue!",
+          () => {
+            window.location.reload();
+          }
+        );
       } else {
         throw new Error(printResult.error || "Printing failed");
       }
     } catch (printError) {
       console.error("Error printing ticket:", printError);
-      alert(
+      showAlert(
+        "Printing Failed",
         `Ticket was created but printing failed. Error: ${printError.message}`
       );
     }
   } catch (error) {
     console.error("Error creating ticket:", error);
-    alert("Failed to create ticket. Please try again.");
+    showAlert("Error", "Failed to create ticket. Please try again.");
   }
 }

@@ -9,6 +9,11 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="menu.css" />
+    <!-- Add SweetAlert2 CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css"
+    />
   </head>
   <body>
     <div class="container">
@@ -30,6 +35,34 @@
       <main id="menu-container" class="menu-container">
         <!-- Menu items will be dynamically inserted here -->
       </main>
+    </div>
+
+    <!-- Language Selection Dialog -->
+    <div id="languageDialog" class="modal">
+      <div class="modal-content">
+        <h2>Select Language</h2>
+        <select id="languageSelect">
+          <option value="">Select a language</option>
+          <option value="English">English</option>
+          <option value="Luganda">Luganda</option>
+          <option value="Swahili">Swahili</option>
+        </select>
+        <div class="modal-buttons">
+          <button id="languageConfirm" class="btn btn-primary">Confirm</button>
+          <button id="languageCancel" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Dialog -->
+    <div id="alertDialog" class="modal">
+      <div class="modal-content">
+        <h2 id="alertTitle"></h2>
+        <p id="alertMessage"></p>
+        <div class="modal-buttons">
+          <button id="alertConfirm" class="btn btn-primary">OK</button>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -74,6 +107,8 @@
         }
       });
     </script>
+    <!-- Add SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script src="../../menu.js"></script>
   </body>
 </html>
