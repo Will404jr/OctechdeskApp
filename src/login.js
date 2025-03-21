@@ -1,34 +1,96 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const loginForm = document.getElementById("loginForm");
   const errorMessage = document.getElementById("errorMessage");
+  const loginButton = document.getElementById("loginButton");
+  const loginText = document.getElementById("loginText");
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  const togglePassword = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("password");
+
+  // Password visibility toggle
+  togglePassword.addEventListener("click", () => {
+    const type =
+      passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    togglePassword.querySelector("i").classList.toggle("fa-eye");
+    togglePassword.querySelector("i").classList.toggle("fa-eye-slash");
+  });
+
+  // Get environment variables
+  let env;
+  try {
+    env = await window.api.getEnv();
+    console.log("Renderer received env:", env); // Debug
+  } catch (error) {
+    console.error("Failed to fetch env:", error);
+    errorMessage.textContent =
+      "Configuration error: Unable to load environment";
+    return;
+  }
+
+  // Validate env.API_URL
+  if (!env || !env.API_URL) {
+    console.error("API_URL is missing or undefined");
+    errorMessage.textContent = "Configuration error: API URL not set";
+    return;
+  }
+
+  // Define endpoints as constants
+  const SETTINGS_ENDPOINT = "/api/settings";
+  const HOSPITAL_LOGIN_ENDPOINT = "/api/hospital/kiosk-login";
+  const BANK_LOGIN_ENDPOINT = "/api/bank/kiosk-login";
+
+  // Function to show loading state
+  function showLoading() {
+    loginText.textContent = "Logging in...";
+    loadingSpinner.classList.remove("hidden");
+    loginButton.disabled = true;
+    loginButton.classList.add("opacity-75");
+  }
+
+  // Function to hide loading state
+  function hideLoading() {
+    loginText.textContent = "Log In";
+    loadingSpinner.classList.add("hidden");
+    loginButton.disabled = false;
+    loginButton.classList.remove("opacity-75");
+  }
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    showLoading();
+    errorMessage.textContent = "";
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
     try {
-      // First, check the company type
-      // const apiUrl = window.env.API_URL;
-      const settingsResponse = await fetch(
-        "http://localhost:3000/api/settings"
-      );
+      const settingsUrl = `${env.API_URL}${SETTINGS_ENDPOINT}`;
+      console.log("Fetching settings from:", settingsUrl); // Debug
+      const settingsResponse = await fetch(settingsUrl);
+
       if (!settingsResponse.ok) {
-        throw new Error("Failed to fetch company settings");
+        const errorText = await settingsResponse.text();
+        throw new Error(
+          `Failed to fetch company settings: ${settingsResponse.status} - ${errorText}`
+        );
       }
+
       const settings = await settingsResponse.json();
+      console.log("Settings received:", settings); // Debug
       const companyType = settings.companyType;
 
       let loginUrl;
       if (companyType === "Hospital") {
-        loginUrl = "http://localhost:3000/api/hospital/kiosk-login";
+        loginUrl = `${env.API_URL}${HOSPITAL_LOGIN_ENDPOINT}`;
       } else if (companyType === "Bank") {
-        loginUrl = "http://localhost:3000/api/bank/kiosk-login";
+        loginUrl = `${env.API_URL}${BANK_LOGIN_ENDPOINT}`;
       } else {
         throw new Error("Invalid company type");
       }
 
+      console.log("Logging in at:", loginUrl); // Debug
       const loginResponse = await fetch(loginUrl, {
         method: "POST",
         headers: {
@@ -39,72 +101,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (loginResponse.ok) {
         const responseData = await loginResponse.json();
-        console.log(`${companyType} kiosk login successful`);
+        console.log(`${companyType} kiosk login successful:`, responseData); // Debug
         errorMessage.textContent = "";
 
         if (companyType === "Bank" && responseData.branchId) {
-          // Store branchId in sessionStorage for bank logins
           sessionStorage.setItem("branchId", responseData.branchId);
         }
 
-        // Redirect to the appropriate dashboard or main page
         window.location.href =
           companyType === "Hospital"
             ? "./pages/hospital/hospital.html"
             : "./pages/bank/menu.html";
       } else {
-        // Login failed
         const errorData = await loginResponse.json();
+        console.error("Login failed:", errorData); // Debug
         errorMessage.textContent =
           errorData.error || "Invalid username or password";
+        hideLoading();
       }
     } catch (error) {
       console.error("Login error:", error);
       errorMessage.textContent = "An error occurred. Please try again.";
+      hideLoading();
     }
   });
 });
-
-// Simulating the DOM and form submission for demonstration
-const mockDocument = {
-  getElementById: (id) => ({
-    value: id === "username" ? "testuser" : "testpass",
-    addEventListener: (event, callback) => {
-      if (event === "submit") {
-        callback({ preventDefault: () => {} });
-      }
-    },
-  }),
-};
-
-global.document = mockDocument;
-global.window = {
-  location: { href: "" },
-  sessionStorage: {
-    setItem: (key, value) =>
-      console.log(`Setting ${key} to ${value} in sessionStorage`),
-  },
-};
-global.fetch = async (url, options) => {
-  if (url.includes("/api/settings")) {
-    return {
-      ok: true,
-      json: async () => ({ companyType: "Bank" }),
-    };
-  }
-  if (url.includes("/api/bank/kiosk-login")) {
-    return {
-      ok: true,
-      json: async () => ({
-        message: "Kiosk login successful",
-        branchId: "123456",
-      }),
-    };
-  }
-  throw new Error("Unexpected URL");
-};
-
-// Trigger the DOMContentLoaded event
-document.addEventListener("DOMContentLoaded", () => {});
-
-console.log("Final window.location.href:", window.location.href);

@@ -4,42 +4,127 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Form</title>
-    <link rel="stylesheet" href="index.css" />
+    <script src="./assets/tailwind.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4a90e2",
+              secondary: "#f5f7fa",
+              darkBlue: "#0a4c86",
+              lightBlue: "#3a7bd5",
+              error: "#e74c3c",
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Removed Font Awesome -->
   </head>
-  <body>
-    <div class="container">
-      <form id="loginForm" class="login-form">
-        <div class="logo">
-          <img src="../public/octech.jpg" alt="Company Logo" height="20px" />
-        </div>
-        <h2>Welcome Back</h2>
-        <div class="input-group">
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="Username"
-            required
+  <body
+    class="bg-secondary font-sans flex justify-center items-center min-h-screen text-gray-800"
+  >
+    <div class="w-full max-w-md px-6">
+      <form
+        id="loginForm"
+        class="bg-white p-8 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
+      >
+        <div class="text-center mb-6">
+          <img
+            src="./assets/octech.jpg"
+            alt="Company Logo"
+            class="max-w-[150px] h-auto mx-auto"
           />
         </div>
-        <div class="input-group">
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Password"
-            required
-          />
+        <h2 class="text-2xl font-bold text-center mb-6 text-darkBlue">
+          Welcome Back
+        </h2>
+        <div class="mb-6">
+          <div class="relative">
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500"
+            >
+              <img
+                src="./assets/icons/user.svg"
+                alt="User Icon"
+                class="w-5 h-5 text-gray-500"
+              />
+            </span>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username"
+              required
+              class="w-full py-3 pl-10 pr-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+            />
+          </div>
         </div>
-        <button type="submit">Log In</button>
-        <div id="errorMessage" class="error-message"></div>
-        <!-- <div class="links">
-          <a href="#">Forgot password?</a>
-          <a href="#">Sign up</a>
-        </div> -->
+        <div class="mb-6">
+          <div class="relative">
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500"
+            >
+              <img
+                src="./assets/icons/lock.svg"
+                alt="Lock Icon"
+                class="w-5 h-5"
+              />
+            </span>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              required
+              class="w-full py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+            />
+            <button
+              type="button"
+              id="togglePassword"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 cursor-pointer"
+            >
+              <img
+                src="./assets/icons/eye.svg"
+                alt="Eye Icon"
+                class="w-5 h-5"
+              />
+            </button>
+          </div>
+        </div>
+        <button
+          type="submit"
+          id="loginButton"
+          class="w-full py-3 bg-darkBlue text-white rounded-lg font-medium transition-all duration-300 hover:bg-lightBlue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-darkBlue flex justify-center items-center"
+        >
+          <span id="loginText">Log In</span>
+          <svg
+            id="loadingSpinner"
+            class="animate-spin ml-2 h-5 w-5 text-white hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </button>
+        <div id="errorMessage" class="text-error mt-4 text-center"></div>
       </form>
     </div>
 
-    <script src="login.js"></script>
+    <script src="./login.js"></script>
   </body>
 </html>
