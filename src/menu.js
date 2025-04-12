@@ -4,6 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
   setupLanguageSelection();
   fetchBankSettings();
   fetchMenuData();
+
+  // Add back button functionality
+  const backButton = document.getElementById("backToLanguageBtn");
+  if (backButton) {
+    backButton.addEventListener("click", () => {
+      document.getElementById("main-content").style.display = "none";
+      document.getElementById("language-selection").style.display = "flex";
+      selectedLanguage = ""; // Reset selected language
+    });
+  }
 });
 
 async function fetchBankSettings() {
@@ -109,12 +119,49 @@ function renderMenu(menuData) {
         "bg-lightBlue text-white border-none py-5 px-6 text-2xl cursor-pointer text-left transition-all duration-300 rounded-lg w-full block h-full";
       treeSubmenuButton.textContent = subItem.name;
       treeSubmenuButton.setAttribute("data-id", subItem._id);
-      treeSubmenuButton.addEventListener("click", () => {
-        createTicket(
-          item._id,
-          subItem._id,
-          `${item.menuItem.name} - ${subItem.name}`
-        );
+
+      // Create loading spinner element
+      const loadingSpinner = document.createElement("span");
+      loadingSpinner.className = "hidden ml-2 inline-block";
+      loadingSpinner.innerHTML = `
+        <svg class="animate-spin h-6 w-6 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      `;
+
+      // Create text container for button
+      const buttonTextSpan = document.createElement("span");
+      buttonTextSpan.className = "button-text";
+      buttonTextSpan.textContent = subItem.name;
+
+      // Clear button text and add spans
+      treeSubmenuButton.textContent = "";
+      treeSubmenuButton.appendChild(buttonTextSpan);
+      treeSubmenuButton.appendChild(loadingSpinner);
+
+      treeSubmenuButton.addEventListener("click", async (e) => {
+        // Show loading state
+        const button = e.currentTarget;
+        const textSpan = button.querySelector(".button-text");
+        const spinner = button.querySelector("span:last-child");
+
+        button.disabled = true;
+        textSpan.textContent = "Processing...";
+        spinner.classList.remove("hidden");
+
+        try {
+          await createTicket(
+            item._id,
+            subItem._id,
+            `${item.menuItem.name} - ${subItem.name}`
+          );
+        } finally {
+          // Reset button state if needed (though page will likely reload on success)
+          button.disabled = false;
+          textSpan.textContent = subItem.name;
+          spinner.classList.add("hidden");
+        }
       });
 
       treeSubmenuItem.appendChild(treeSubmenuButton);

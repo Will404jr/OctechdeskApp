@@ -35,6 +35,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  // Fetch bank settings and update logo
+  await fetchBankSettings(env);
+
   // Define endpoints as constants
   const SETTINGS_ENDPOINT = "/api/settings";
   const HOSPITAL_LOGIN_ENDPOINT = "/api/hospital/kiosk-login";
@@ -54,6 +57,50 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadingSpinner.classList.add("hidden");
     loginButton.disabled = false;
     loginButton.classList.remove("opacity-75");
+  }
+
+  // Function to fetch bank settings and update logo
+  async function fetchBankSettings(env) {
+    try {
+      const response = await fetch(`${env.API_URL}/api/bank/settings`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch bank settings");
+      }
+
+      const settings = await response.json();
+
+      // Set the logo if available
+      if (settings && settings.logoImage) {
+        const bankLogo = document.getElementById("bank-logo");
+        if (bankLogo) {
+          if (settings.logoImage.startsWith("/")) {
+            // This is a relative path, add the base URL
+            bankLogo.src = `${env.API_URL}${settings.logoImage}`;
+          } else {
+            // This is already a full URL
+            bankLogo.src = settings.logoImage;
+          }
+
+          // Set alt text to company name if available
+          if (settings.companyName) {
+            bankLogo.alt = `${settings.companyName} Logo`;
+          }
+        }
+      } else {
+        // If no logo found, use a fallback
+        const bankLogo = document.getElementById("bank-logo");
+        if (bankLogo) {
+          bankLogo.src = "./assets/octech.jpg";
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching bank settings:", error);
+      // Use fallback logo on error
+      const bankLogo = document.getElementById("bank-logo");
+      if (bankLogo) {
+        bankLogo.src = "./assets/octech.jpg";
+      }
+    }
   }
 
   loginForm.addEventListener("submit", async (e) => {

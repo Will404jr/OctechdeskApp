@@ -3,6 +3,22 @@ let selectedLanguage = "";
 document.addEventListener("DOMContentLoaded", () => {
   setupLanguageSelection();
   fetchHospitalSettings();
+
+  // Add back button functionality
+  const backButton = document.getElementById("backToLanguageBtn");
+  if (backButton) {
+    backButton.addEventListener("click", () => {
+      document.getElementById("main-content").style.display = "none";
+      document.getElementById("language-selection").style.display = "flex";
+      selectedLanguage = ""; // Reset selected language
+    });
+  }
+
+  // Add event listener for the get ticket button
+  const getTicketBtn = document.getElementById("getTicketBtn");
+  if (getTicketBtn) {
+    getTicketBtn.addEventListener("click", createTicket);
+  }
 });
 
 async function fetchHospitalSettings() {
@@ -95,6 +111,17 @@ function showAlert(title, message, callback = null, autoClose = false) {
 }
 
 async function createTicket() {
+  // Show loading state
+  const getTicketBtn = document.getElementById("getTicketBtn");
+  const buttonText = document.getElementById("buttonText");
+  const loadingSpinner = document.getElementById("loadingSpinner");
+
+  if (getTicketBtn && buttonText && loadingSpinner) {
+    getTicketBtn.disabled = true;
+    buttonText.textContent = "Processing...";
+    loadingSpinner.classList.remove("hidden");
+  }
+
   try {
     // Get environment variables
     const env = await window.api.getEnv();
@@ -152,13 +179,12 @@ async function createTicket() {
   } catch (error) {
     console.error("Error creating hospital ticket:", error);
     showAlert("Error", "Failed to create hospital ticket. Please try again.");
+  } finally {
+    // Reset button state
+    if (getTicketBtn && buttonText && loadingSpinner) {
+      getTicketBtn.disabled = false;
+      buttonText.textContent = "Get Ticket";
+      loadingSpinner.classList.add("hidden");
+    }
   }
 }
-
-// Add event listener for the get ticket button after language selection
-document.addEventListener("DOMContentLoaded", () => {
-  const getTicketBtn = document.getElementById("getTicketBtn");
-  if (getTicketBtn) {
-    getTicketBtn.addEventListener("click", createTicket);
-  }
-});

@@ -25,7 +25,7 @@ class PrintService {
 
   fetchBankSettings() {
     return new Promise((resolve, reject) => {
-      const apiUrl = "http://192.168.188.5:3000/api/bank/settings";
+      const apiUrl = "http://192.168.188.4:3000/api/bank/settings";
       const requester = apiUrl.startsWith("https") ? https : http;
 
       const req = requester.get(apiUrl, (res) => {
@@ -65,7 +65,7 @@ class PrintService {
 
       if (settings && settings.logoImage) {
         if (settings.logoImage.startsWith("/")) {
-          return `http://192.168.188.5:3000${settings.logoImage}`;
+          return `http://192.168.188.4:3000${settings.logoImage}`;
         } else {
           return settings.logoImage;
         }
@@ -108,7 +108,7 @@ class PrintService {
               }
               .ticket {
                 width: 60mm !important; /* Match content width to tropical.jpg */
-                margin-left: 11mm !important; /* Space from left margin to center contents */
+                margin-left: 8mm !important; /* Space from left margin to center contents */
                 display: block; /* Use block layout */
                 text-align: left; /* Keep content left-aligned within the offset */
               }
@@ -205,7 +205,10 @@ class PrintService {
               Ticket #: ${ticketData.ticketNo}
             </div>
             <div class="ticket-info">
-              <p>${ticketData.issueDescription || "Hospital Visit"}</p>
+              <p>${
+                ticketData.issueDescription ||
+                "Please take a seat you will be served soon!"
+              }</p>
             </div>
             <div class="ticket-footer">
               <p class="bold">Date: ${new Date().toLocaleDateString()}</p>
