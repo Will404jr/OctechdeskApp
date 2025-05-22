@@ -1,18 +1,5 @@
-let selectedLanguage = "";
-
 document.addEventListener("DOMContentLoaded", () => {
-  setupLanguageSelection();
   fetchHospitalSettings();
-
-  // Add back button functionality
-  const backButton = document.getElementById("backToLanguageBtn");
-  if (backButton) {
-    backButton.addEventListener("click", () => {
-      document.getElementById("main-content").style.display = "none";
-      document.getElementById("language-selection").style.display = "flex";
-      selectedLanguage = ""; // Reset selected language
-    });
-  }
 
   // Add event listener for the get ticket button
   const getTicketBtn = document.getElementById("getTicketBtn");
@@ -35,54 +22,37 @@ async function fetchHospitalSettings() {
 
     // Set the logo if available
     if (settings && settings.logoImage) {
-      const logoElements = document.querySelectorAll(
-        "#bank-logo, #main-bank-logo"
-      );
-      logoElements.forEach((logo) => {
+      const logoElement = document.getElementById("main-bank-logo");
+      if (logoElement) {
         // Add base URL to the relative path
         if (settings.logoImage.startsWith("/")) {
           // This is a relative path, add the base URL
-          logo.src = `${env.API_URL}${settings.logoImage}`;
+          logoElement.src = `${env.API_URL}${settings.logoImage}`;
         } else {
           // This is already a full URL
-          logo.src = settings.logoImage;
+          logoElement.src = settings.logoImage;
         }
 
         // Set alt text to company name if available
         if (settings.companyName) {
-          logo.alt = `${settings.companyName} Logo`;
+          logoElement.alt = `${settings.companyName} Logo`;
         }
-      });
+      }
     } else {
       // If no logo found, use a fallback
-      const logoElements = document.querySelectorAll(
-        "#bank-logo, #main-bank-logo"
-      );
-      logoElements.forEach((logo) => {
-        logo.src = "../../../public/1732666481406-logo.png";
-      });
+      const logoElement = document.getElementById("main-bank-logo");
+      if (logoElement) {
+        logoElement.src = "../../../public/1732666481406-logo.png";
+      }
     }
   } catch (error) {
     console.error("Error fetching hospital settings:", error);
     // Use fallback logo on error
-    const logoElements = document.querySelectorAll(
-      "#bank-logo, #main-bank-logo"
-    );
-    logoElements.forEach((logo) => {
-      logo.src = "../../../public/1732666481406-logo.png";
-    });
+    const logoElement = document.getElementById("main-bank-logo");
+    if (logoElement) {
+      logoElement.src = "../../../public/1732666481406-logo.png";
+    }
   }
-}
-
-function setupLanguageSelection() {
-  const languageButtons = document.querySelectorAll(".language-button");
-  languageButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      selectedLanguage = button.getAttribute("data-language");
-      document.getElementById("language-selection").style.display = "none";
-      document.getElementById("main-content").style.display = "flex";
-    });
-  });
 }
 
 // Modified alert function to auto-close for success messages
@@ -131,9 +101,7 @@ async function createTicket() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        language: selectedLanguage,
-      }),
+      body: JSON.stringify({}),
     });
 
     if (!response.ok) {
