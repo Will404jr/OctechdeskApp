@@ -24,16 +24,68 @@
     </script>
     <!-- Add SweetAlert2 CSS -->
     <link rel="stylesheet" href="../../assets/sweetalert2.css" />
+    <style>
+      .ticket-card {
+        transition: all 0.3s ease;
+      }
+      .ticket-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      }
+      .pulse-animation {
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      .marquee {
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+      .marquee span {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 15s linear infinite;
+      }
+      @keyframes marquee {
+        0% { transform: translate3d(100%, 0, 0); }
+        100% { transform: translate3d(-100%, 0, 0); }
+      }
+      .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+      }
+      .status-active { background-color: #3b82f6; }
+      .status-waiting { background-color: #10b981; }
+      .status-held { background-color: #f59e0b; }
+      .ticket-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+      .next-badge {
+        background-color: #3b82f6;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: bold;
+        margin-left: 8px;
+      }
+    </style>
   </head>
   <body
-    class="bg-gray-100 text-gray-800 font-sans min-h-screen p-0 m-0 flex justify-center items-center text-lg"
+    class="bg-gray-100 text-gray-800 font-sans min-h-screen p-0 m-0 flex flex-col"
   >
-    <div
-      id="main-content"
-      class="max-w-4xl mx-auto p-5 flex flex-col items-center gap-5 w-full box-border"
-    >
+    <div class="flex-1 max-w-7xl mx-auto p-5 w-full box-border">
+      <!-- Header Section -->
       <div
-        class="w-full bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 hover:translate-y-[-5px] hover:shadow-xl"
+        class="w-full bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 hover:translate-y-[-5px] hover:shadow-xl mb-5"
       >
         <header class="flex flex-col justify-center items-center p-5 gap-5">
           <div class="flex justify-between w-full">
@@ -57,24 +109,106 @@
             <div
               class="bg-lightBlue text-white py-3 px-8 rounded-full text-xl font-bold shadow-md transition-all duration-300 hover:bg-darkBlue hover:translate-y-[-2px] hover:shadow-lg"
             >
-              Please click the button below to get your ticket and wait in queue
+              Queue Management System - Live Status
             </div>
           </div>
         </header>
       </div>
 
+      <!-- Live Queue Display Section -->
+      <div
+        id="queue-display"
+        class="w-full bg-white rounded-2xl shadow-lg p-6 mb-5 min-h-[500px]"
+      >
+        <!-- Status Summary -->
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-darkBlue">Live Queue Status</h2>
+          <div class="flex gap-4 text-sm">
+            <div class="flex items-center">
+              <span class="status-indicator status-active"></span>
+              <span>Active: <span id="active-count">0</span></span>
+            </div>
+            <div class="flex items-center">
+              <span class="status-indicator status-waiting"></span>
+              <span>Waiting: <span id="waiting-count">0</span></span>
+            </div>
+            <div class="flex items-center">
+              <span class="status-indicator status-held"></span>
+              <span>Held: <span id="held-count">0</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="flex border-b border-gray-200 mb-6">
+          <button
+            id="tab-active"
+            class="tab-button px-6 py-3 font-semibold text-blue-600 border-b-2 border-blue-600 bg-blue-50"
+            onclick="switchTab('active')"
+          >
+            🔵 Currently Being Served
+          </button>
+          <button
+            id="tab-waiting"
+            class="tab-button px-6 py-3 font-semibold text-gray-600 hover:text-green-600 hover:bg-green-50"
+            onclick="switchTab('waiting')"
+          >
+            🟢 Waiting in Queue
+          </button>
+          <button
+            id="tab-held"
+            class="tab-button px-6 py-3 font-semibold text-gray-600 hover:text-yellow-600 hover:bg-yellow-50"
+            onclick="switchTab('held')"
+          >
+            🟡 On Hold
+          </button>
+        </div>
+
+        <!-- Content Areas -->
+        <div id="content-active" class="tab-content">
+          <div class="ticket-grid" id="active-tickets-grid">
+            <div class="text-center py-12 text-gray-500 col-span-full">
+              <div class="text-6xl mb-4">🏥</div>
+              <p class="text-xl font-medium">No patients currently being served</p>
+              <p class="text-sm">All service counters are available</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="content-waiting" class="tab-content hidden">
+          <div class="ticket-grid" id="waiting-tickets-grid">
+            <div class="text-center py-12 text-gray-500 col-span-full">
+              <div class="text-6xl mb-4">⏳</div>
+              <p class="text-xl font-medium">No patients waiting</p>
+              <p class="text-sm">Queue is empty</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="content-held" class="tab-content hidden">
+          <div class="ticket-grid" id="held-tickets-grid">
+            <div class="text-center py-12 text-gray-500 col-span-full">
+              <div class="text-6xl mb-4">⏸️</div>
+              <p class="text-xl font-medium">No tickets on hold</p>
+              <p class="text-sm">All patients are in normal flow</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Get Ticket Section -->
       <main
         id="ticket-container"
         class="w-full bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 hover:translate-y-[-5px] hover:shadow-xl"
       >
         <div class="ticket-card bg-white rounded-2xl p-8 text-center">
-          <h2 class="text-3xl text-darkBlue font-bold mb-4">Receptionist</h2>
+          <h2 class="text-3xl text-darkBlue font-bold mb-4">Get Your Ticket</h2>
           <p class="text-xl text-gray-600 mb-6">
-            Get your ticket for the reception desk
+            Click below to join the queue and get your ticket number
           </p>
           <button
             id="getTicketBtn"
-            class="bg-darkBlue text-white border-none py-4 px-10 text-2xl font-bold cursor-pointer rounded-full transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg"
+            class="bg-darkBlue text-white border-none py-4 px-10 text-2xl font-bold cursor-pointer rounded-full transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:bg-lightBlue"
           >
             <span id="buttonText">Get Ticket</span>
             <span id="loadingSpinner" class="hidden ml-2">
@@ -103,6 +237,13 @@
         </div>
       </main>
     </div>
+
+    <!-- Footer with scrolling text -->
+    <footer class="bg-darkBlue text-white p-3 mt-5">
+      <div class="marquee">
+        <span id="marquee-text">Welcome to our Hospital Queue Management System - Please wait for your turn</span>
+      </div>
+    </footer>
 
     <!-- Alert Dialog -->
     <div

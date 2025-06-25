@@ -25,7 +25,7 @@ class PrintService {
 
   fetchBankSettings() {
     return new Promise((resolve, reject) => {
-      const apiUrl = "http://192.168.188.4:3000/api/bank/settings";
+      const apiUrl = "http://localhost:3001/api/bank/settings";
       const requester = apiUrl.startsWith("https") ? https : http;
 
       const req = requester.get(apiUrl, (res) => {
@@ -65,7 +65,7 @@ class PrintService {
 
       if (settings && settings.logoImage) {
         if (settings.logoImage.startsWith("/")) {
-          return `http://192.168.188.4:3000${settings.logoImage}`;
+          return `http://localhost:3001${settings.logoImage}`;
         } else {
           return settings.logoImage;
         }
